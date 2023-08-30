@@ -5,7 +5,7 @@ nome_usuario = input('Digite seu nome: ')
 # Cria a  a lista
 lista_compras = []
 
-def insere():
+def incluir_item():
     novo_elemento = input('Insira a descrição do novo item: ')
     lista_compras.append(novo_elemento)
     print(f'{novo_elemento=} inserido com com sucesso!')
@@ -17,6 +17,9 @@ while True:
     print('Selecione uma opção: \n')
     resposta = input("[i]nserir, [a]pagar, [l]istar ou [s]air? ").lower()
 
+    if 'i' in resposta:
+        incluir_item()
+        continue
 
 
 
