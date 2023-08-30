@@ -1,4 +1,6 @@
 
+import os
+
 # Pede o nome do usuário
 nome_usuario = input('Digite seu nome: ')
 # Pede o nome da lista de compras
@@ -62,19 +64,22 @@ def apagar_item():
 
 # Cria laço While para interação com o usuário
 while True:
-
-    print(f'Olá{nome_usuario}! Selecione uma opção: \n')
+    
+    print(f'Olá {nome_usuario}! Selecione uma opção: \n')
     resposta = input("[i]nserir, [a]pagar, [l]istar ou [s]air? ").lower()
 
     if 'i' in resposta:
+        os.system('cls')
         incluir_item()
         continue
 
     elif 'a' in resposta:
+        os.system('cls')
         apagar_item()
         continue
 
     elif 'l' in resposta:
+        os.system('cls')
         listar_itens()
         continue
     
@@ -83,5 +88,8 @@ while True:
 
     else:
         continue    
-   
+
+os.system('cls')
+print (f'Até mais {nome_usuario} Sua lista de itens esta logo abaixo :P')
+listar_itens()
 
