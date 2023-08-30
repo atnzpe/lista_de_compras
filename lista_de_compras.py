@@ -5,7 +5,11 @@ nome_usuario = input('Digite seu nome: ')
 # Cria a  a lista
 lista_compras = []
 
+# Cria laço While para interação com o usuário
+while True:
 
+    print('Selecione uma opção: \n')
+    resposta = input("[i]nserir, [a]pagar, [l]istar ou [s]air? ").lower()
 
 
 
