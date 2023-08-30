@@ -5,6 +5,12 @@ nome_usuario = input('Digite seu nome: ')
 # Cria a  a lista
 lista_compras = []
 
+def insere():
+    novo_elemento = input('Insira a descrição do novo item: ')
+    lista_compras.append(novo_elemento)
+    print(f'{novo_elemento=} inserido com com sucesso!')
+
+
 # Cria laço While para interação com o usuário
 while True:
 
