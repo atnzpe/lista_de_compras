@@ -33,11 +33,11 @@ def listar_itens():
         print(f'{nome_usuario} sua lista esta vazia :( ')
     else:
         print("\nIncio da Lista\n")
-        print("ID","Descrição",sep=" --- ")
-        for indice,produtos in enumerate(lista_compras):
-            print(indice,produtos,sep="  --- ")
+        print("ID", "Descrição", sep=" --- ")
+        for indice, produtos in enumerate(lista_compras):
+            print(indice, produtos, sep="  --- ")
 
-    print("\nFim da Lista\n")        
+    print("\nFim da Lista\n")
 
 # Funçõa para apagar um item através do indice ou do nome
 
