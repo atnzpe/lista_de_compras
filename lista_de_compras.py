@@ -27,13 +27,17 @@ def incluir_item():
 def listar_itens():
     # Limpar a tela
     os.system('cls')
-    print('listando os objetos de uma lista\n')
+    print('listando os objetos de uma lista: ')
 
     if len(lista_compras) == 0:
         print(f'{nome_usuario} sua lista esta vazia :( ')
     else:
-        for indice, produtos in enumerate(lista_compras):
-            print(indice, produtos)
+        print("\nIncio da Lista\n")
+        print("ID","Descrição",sep=" --- ")
+        for indice,produtos in enumerate(lista_compras):
+            print(indice,produtos,sep="  --- ")
+
+    print("\nFim da Lista\n")        
 
 # Funçõa para apagar um item através do indice ou do nome
 
