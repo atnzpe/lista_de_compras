@@ -10,7 +10,6 @@ lista_compras = []
 
 # Função para incluir item na lista
 
-
 def incluir_item():
     # Limpar a tela
     os.system('cls')
@@ -23,7 +22,6 @@ def incluir_item():
 
 # Função Listar Itens e seus indices
 
-
 def listar_itens():
     # Limpar a tela
     os.system('cls')
@@ -33,14 +31,13 @@ def listar_itens():
         print(f'{nome_usuario} sua lista esta vazia :( ')
     else:
         print("\nIncio da Lista\n")
-        print("ID","Descrição",sep=" --- ")
-        for indice,produtos in enumerate(lista_compras):
-            print(indice,produtos,sep="  --- ")
+        print("ID", "Descrição", sep=" --- ")
+        for indice, produtos in enumerate(lista_compras):
+            print(indice, produtos, sep="  --- ")
 
-    print("\nFim da Lista\n")        
+    print("\nFim da Lista\n")
 
 # Funçõa para apagar um item através do indice ou do nome
-
 
 def apagar_item():
     # Limpar a tela
@@ -68,9 +65,6 @@ def apagar_item():
             lista_compras.remove(nome_do_item)
         else:
             print(f'{nome_usuario} este item não existe na lista')
-
-#
-
 
 # Cria laço While para interação com o usuário
 while True:
