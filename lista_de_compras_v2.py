@@ -26,7 +26,7 @@ class Listadecompra:
         self.produtos = []  # Corrigido: de self.produto para self.produtos
         self.clientes = []
 
-    def criar_usuario(self, nome, cpf, forma_pagamento, endereco):
+    def criar_usuario(self, nome, cpf, forma_pagamento, endereco,email):
         """ "
         Cria um novo usuário e o adiciona à lista de usuários do banco.
 
@@ -44,7 +44,7 @@ class Listadecompra:
         """
         if self.obter_usuario_por_cpf(cpf):
             raise ValueError("Usuário já cadastrado com esse CPF.")
-        cliente = Cliente(nome, cpf, forma_pagamento, endereco)
+        cliente = Cliente(nome, cpf, forma_pagamento, endereco,email)
         self.clientes.append(cliente)
         return cliente
 
@@ -132,10 +132,10 @@ class Listadecompra:
 
         else:
             print("Opção inválida. Escolha 'i' para índice ou 'n' para nome.")
-            
+
     def comprar_itens(self, usuario):
         """
-        Processa a compra dos itens da lista, gera um PDF com os detalhes 
+        Processa a compra dos itens da lista, gera um PDF com os detalhes
         da compra e envia por email para o usuário.
         """
         if not self.produtos:
@@ -161,33 +161,40 @@ class Listadecompra:
         styles = getSampleStyleSheet()
 
         story = []
-        story.append(Paragraph("Confirmação de Compra", styles['Heading1']))
+        story.append(Paragraph("Confirmação de Compra", styles["Heading1"]))
         story.append(Spacer(1, 12))
 
-        story.append(Paragraph(f"Nome: {usuario.nome}", styles['Normal']))
-        story.append(Paragraph(f"Endereço: {usuario.endereco}", styles['Normal']))
+        story.append(Paragraph(f"Nome: {usuario.nome}", styles["Normal"]))
+        story.append(Paragraph(f"Endereço: {usuario.endereco}", styles["Normal"]))
         story.append(Spacer(1, 12))
 
-        story.append(Paragraph("Itens Comprados:", styles['Heading2']))
+        story.append(Paragraph("Itens Comprados:", styles["Heading2"]))
         for produto in self.produtos:
-            story.append(Paragraph(f"- {produto.nome} (Quantidade: {produto.quantidade}, Valor Total do Item: {produto.valor:.2f})", styles['Normal']))
+            story.append(
+                Paragraph(
+                    f"- {produto.nome} (Quantidade: {produto.quantidade}, Valor Total do Item: {produto.valor:.2f})",
+                    styles["Normal"],
+                )
+            )
         story.append(Spacer(1, 12))
 
-        story.append(Paragraph(f"Valor Total: R$ {valor_total:.2f}", styles['Heading2']))
+        story.append(
+            Paragraph(f"Valor Total: R$ {valor_total:.2f}", styles["Heading2"])
+        )
 
         doc.build(story)
         print(f"PDF da compra gerado com sucesso: {nome_arquivo_pdf}")
 
     def enviar_email_confirmacao(self, usuario, nome_arquivo_pdf, valor_total):
         """Envia um email de confirmação com o PDF da compra."""
-        remetente_email = "seu_email@gmail.com"  # Substitua pelo seu endereço de email
-        remetente_senha = "sua_senha"  # Substitua pela sua senha
-        destinatario_email = "email_do_destinatario@example.com"  # Substitua pelo email do destinatário
+        remetente_email = "gleysonasilva@gmail.com"  # Substitua pelo seu endereço de email
+        remetente_senha = "zmzm duow hagq zdth"  # Substitua pela sua senha
+        destinatario_email = usuario.email
 
         mensagem = MIMEMultipart()
-        mensagem['From'] = remetente_email
-        mensagem['To'] = usuario.email  # Usando o email do usuário
-        mensagem['Subject'] = "Confirmação de Compra - Sua Lista de Compras"
+        mensagem["From"] = remetente_email
+        mensagem["To"] = destinatario_email  # Usando o email do usuário
+        mensagem["Subject"] = "Confirmação de Compra - Sua Lista de Compras"
 
         corpo_email = f"""
         Olá {usuario.nome},
@@ -200,14 +207,16 @@ class Listadecompra:
 
         Sua Lista de Compras
         """
-        mensagem.attach(MIMEText(corpo_email, 'plain'))
+        mensagem.attach(MIMEText(corpo_email, "plain"))
 
         # Anexa o PDF à mensagem
         with open(nome_arquivo_pdf, "rb") as anexo:
-            parte_anexo = MIMEBase('application', 'octet-stream')
+            parte_anexo = MIMEBase("application", "octet-stream")
             parte_anexo.set_payload(anexo.read())
             encoders.encode_base64(parte_anexo)
-            parte_anexo.add_header('Content-Disposition', f"attachment; filename= {nome_arquivo_pdf}")
+            parte_anexo.add_header(
+                "Content-Disposition", f"attachment; filename= {nome_arquivo_pdf}"
+            )
             mensagem.attach(parte_anexo)
 
         # Cria uma conexão segura com o servidor SMTP
@@ -217,7 +226,6 @@ class Listadecompra:
             servidor.sendmail(remetente_email, usuario.email, mensagem.as_string())
 
         print("Email de confirmação enviado com sucesso!")
-
 
 
 class Produto:
@@ -247,9 +255,10 @@ class Cliente:
         cpf (str): CPF da pessoa.
         forma_pagamento (str): Forma de pagamento da lista.
         endereco (str): Endereço da pessoa.
+        email (str): Endereço de email do cliente.  <-- Adicionado!
     """
 
-    def __init__(self, nome, cpf, forma_pagamento, endereco):
+    def __init__(self, nome, cpf, forma_pagamento, endereco, email): 
         """
         Inicializa um novo objeto Cliente.
 
@@ -258,11 +267,13 @@ class Cliente:
             cpf (str): CPF da pessoa.
             forma_pagamento (str): Forma de pagamento da lista.
             endereco (str): Endereço da pessoa.
+            email (str): Endereço de email do cliente.  <-- Adicionado!
         """
         self.nome = nome
         self.cpf = cpf
         self.forma_pagamento = forma_pagamento
         self.endereco = endereco
+        self.email = email 
 
 
 def menu():
@@ -300,8 +311,13 @@ def main():
         if opcao == "i":
             if usuario_atual:
                 nome = input("Informe o nome do Produto: ")
-                quantidade = float(input("Informe a quantidade do Produto: "))
-                valor = float(input("Informe o VALOR UNITARIO do Produto: "))
+
+                try:
+                    quantidade = float(input("Informe a quantidade do Produto: "))
+                    valor = float(input("Informe o VALOR UNITARIO do Produto: "))
+                except ValueError:
+                    print('Tente novamente e Digite um valor válido! Ex: 1.7')
+                    
                 valor_total = quantidade * valor
                 lista.incluir_produto(nome, quantidade, valor_total)
                 print("Produto incluído com sucesso!")
@@ -319,12 +335,11 @@ def main():
         elif opcao == "l":
             lista.listar_produtos()
 
-        elif opcao == "c": 
+        elif opcao == "c":
             if usuario_atual:
                 lista.comprar_itens(usuario_atual)
             else:
                 print("Você precisa fazer login primeiro (opção 'n').")
-            
 
         elif opcao == "n":
             nome = input("Digite o nome do usuário: ")
@@ -333,9 +348,10 @@ def main():
                 "Digite a forma de pagamento (Dinheiro, Cartão ou PIX): "
             )
             endereco = input("Digite o endereço: ")
+            email = "gleysonasilva@gmail.com"
             try:
                 usuario_atual = lista.criar_usuario(
-                    nome, cpf, forma_pagamento, endereco
+                    nome, cpf, forma_pagamento, endereco,email
                 )
                 print("Usuário criado e logado com sucesso!")
             except ValueError as e:
