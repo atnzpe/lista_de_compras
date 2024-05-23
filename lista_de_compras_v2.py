@@ -165,7 +165,8 @@ class Listadecompra:
         story.append(Spacer(1, 12))
 
         story.append(Paragraph(f"Nome: {usuario.nome}", styles["Normal"]))
-        story.append(Paragraph(f"Endereço: {usuario.endereco}", styles["Normal"]))
+        story.append(Paragraph(f"Endereço de Entrega: {usuario.endereco}", styles["Normal"]))
+        story.append(Paragraph(f"Forma de Pagamento: {usuario.forma_pagamento}", styles["Normal"]))
         story.append(Spacer(1, 12))
 
         story.append(Paragraph("Itens Comprados:", styles["Heading2"]))
@@ -187,8 +188,8 @@ class Listadecompra:
 
     def enviar_email_confirmacao(self, usuario, nome_arquivo_pdf, valor_total):
         """Envia um email de confirmação com o PDF da compra."""
-        remetente_email = "gleysonasilva@gmail.com"  # Substitua pelo seu endereço de email
-        remetente_senha = "zmzm duow hagq zdth"  # Substitua pela sua senha
+        remetente_email = "applistadecompraspython@gmail.com"  # Substitua pelo seu endereço de email
+        remetente_senha = "arzf mwtc wjgc iugb"  # Substitua pela sua senha
         destinatario_email = usuario.email
 
         mensagem = MIMEMultipart()
@@ -243,7 +244,7 @@ class Produto:
         self.quantidade = quantidade
         self.valor = valor
 
-    pass
+    
 
 
 class Cliente:
@@ -348,7 +349,7 @@ def main():
                 "Digite a forma de pagamento (Dinheiro, Cartão ou PIX): "
             )
             endereco = input("Digite o endereço: ")
-            email = "gleysonasilva@gmail.com"
+            email = input("Digite seu email: ")
             try:
                 usuario_atual = lista.criar_usuario(
                     nome, cpf, forma_pagamento, endereco,email
