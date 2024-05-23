@@ -348,7 +348,6 @@ class ListaComprasApp(ft.UserControl):
         self.dlg_login.open = True
         self.page.update()
     
-    
 
     def fazer_login(self, e):
         dlg = self.page.dialog
@@ -411,13 +410,34 @@ class ListaComprasApp(ft.UserControl):
 
     def abrir_modal_comprar_itens(self, e):
         if not self.lista.produtos:
-            print("Sua lista de compras está vazia!")
+            self.mostrar_alerta("Sua lista de compras está vazia!")
             return
         
+        # Cria a lista de itens para o modal
+        itens_lista = [
+            ft.ListTile(
+                title=ft.Text(produto.nome),
+                subtitle=ft.Text(
+                    f"-(Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f}"
+                ),
+            )
+            for produto in self.lista.produtos
+        ]
+
+        # Calcula o valor total da compra
+        valor_total = sum(produto.valor_total for produto in self.lista.produtos)
+        
+        # Cria o modal de confirmação de compra
         self.dlg_comprar_itens = ft.AlertDialog(
             modal=True,
             title=ft.Text("Confirmar Compra"),
-            content=ft.Text("Tem certeza que deseja comprar os itens da lista?"),
+            content=ft.Column(
+                [
+                    ft.Text("Itens da sua compra:"),
+                    ft.Column(itens_lista),
+                    ft.Text(f"Valor Total: R$ {valor_total:.2f}", size=16, weight=ft.FontWeight.BOLD),
+                ]
+            ),
             actions=[
                 ft.TextButton("Cancelar", on_click=self.fechar_modal),
                 ft.ElevatedButton("Confirmar", on_click=self.confirmar_compra),
@@ -426,6 +446,7 @@ class ListaComprasApp(ft.UserControl):
         )
         self.page.dialog = self.dlg_comprar_itens
         self.dlg_comprar_itens.open = True
+        self.mostrar_alerta("Email de confirmação enviado com sucesso!")
         self.page.update()
 
     def confirmar_compra(self, e):
