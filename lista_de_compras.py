@@ -39,32 +39,8 @@ def listar_itens():
 
 # Funçõa para apagar um item através do indice ou do nome
 
-def apagar_item():
-    # Limpar a tela
-    os.system('cls')
-    # Pergunta ao usuario o que quer apagar
-    print(f'Olá{nome_usuario}! Selecione o que quer apagar : \n')
-    # cria a variavel opcao_apagar
-    opcao_apagar = input('[i]ndice ou [n]ome do item? ')
 
-    if 'i' in opcao_apagar:
-        indice = int(input("Qual indice você deseja remover: "))
-
-        if indice > (len(lista_compras)-1) or indice < 0:
-            print(f"{nome_usuario} este indice não existe na sua lista ou sua lista esta vazia. Tente listar ou buscar o pelo nome do item.")
-
-        else:
-            item_removido = lista_compras[indice]
-            lista_compras.pop(indice)
-            print(f"{nome_usuario} você removeu com sucesso o item {item_removido}")
-
-    if 'n' in opcao_apagar:
-        nome_do_item = input("Qual nome você deseja remover: ")
-
-        if nome_do_item in lista_compras:
-            lista_compras.remove(nome_do_item)
-        else:
-            print(f'{nome_usuario} este item não existe na lista')
+            
 
 # Cria laço While para interação com o usuário
 while True:
