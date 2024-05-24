@@ -699,9 +699,12 @@ class ListaComprasApp:
 
     def confirmar_compra(self, e):
             if self.usuario_atual:
+                self.mostrar_mensagens_console()  # Abre o modal
                 self.lista.comprar_itens(self.usuario_atual)
-                self.fechar_modal(e)  # Fecha o modal de compra
-                #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
+                self.dlg_console.content.value = self.console_output.getvalue() # Atualiza o Text com as mensagens
+                self.dlg_console.update()  # Atualiza o modal para exibir as mensagens
+                self.fechar_modal(e)
+                sys.stdout = sys.__stdout__  # Restaura a saída padrão
             else:
                 print("Você precisa fazer login primeiro.")
 
