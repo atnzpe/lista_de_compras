@@ -39,3 +39,18 @@ Refatoração completa do código para usar a biblioteca Flet, criando uma inter
 - Implementar funcionalidades adicionais, como edição de itens, histórico de compras, etc.
 - Aprimorar o tratamento de erros e a validação de entradas do usuário.
 - Refinar o design da interface para uma melhor experiência do usuário.
+
+### Em 24/05/2024
+
+feat: Implementada a funcionalidade de edição de itens
+
+Adicionada a capacidade de editar itens existentes na lista de compras.
+
+- Adicionado um botão "Editar Item" à tela principal.
+- Criado um modal para edição de itens, permitindo ao usuário:
+    - Selecionar o item a ser editado através de um dropdown.
+    - Alterar o nome, quantidade e valor unitário do item.
+- Implementada a lógica para salvar as alterações do item na lista de compras.
+- Habilitado o botão "Editar Item" após o login do usuário.
+
+Essa funcionalidade aumenta a flexibilidade do aplicativo, permitindo que os usuários corrijam ou modifiquem os itens da sua lista de compras de forma conveniente.git
