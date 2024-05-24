@@ -1,5 +1,6 @@
 
 import os
+import sys
 import datetime
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
@@ -306,6 +307,23 @@ class ListaComprasApp:
         self.page = page
         self.lista = Listadecompra()
         self.usuario_atual = None
+        
+    def mostrar_mensagens_console(self):
+        self.console_output = io.StringIO()
+        sys.stdout = self.console_output
+
+        self.dlg_console = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Mensagens do Console"),
+            content=ft.Text(value=""), # Componente Text para exibir as mensagens
+            actions=[
+                ft.TextButton("Fechar", on_click=self.fechar_modal),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.dialog = self.dlg_console
+        self.dlg_console.open = True
+        self.page.update()
 
     def atualizar_estado_botoes(self):
         """Atualiza o estado dos botões com base no login."""
