@@ -1,4 +1,5 @@
-<<<<<<< HEAD
+
+
 
 import os
 import datetime
