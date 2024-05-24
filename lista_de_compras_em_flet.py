@@ -13,6 +13,8 @@ import ssl
 
 import flet as ft
 
+#implementar historico
+
 
 class Listadecompra:
     """
@@ -642,7 +644,7 @@ class ListaComprasApp:
             return
 
         # Cria a lista de itens para o modal
-        itens_lista = [
+        itens_lista =[
             ft.ListTile(
                 title=ft.Text(produto.nome),
                 subtitle=ft.Text(
@@ -676,15 +678,15 @@ class ListaComprasApp:
         )
         self.page.dialog = self.dlg_comprar_itens
         self.dlg_comprar_itens.open = True
-        self.mostrar_alerta("Email de confirmação enviado com sucesso!")
+        #self.mostrar_alerta("Email de confirmação enviado com sucesso!")
         self.page.update()
 
     def confirmar_compra(self, e):
-            if self.usuario_atual:
-                self.lista.comprar_itens(self.usuario_atual)
-                self.fechar_modal(e)  # Fecha o modal de compra
-                #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
-            else:
+        if self.usuario_atual:
+            self.lista.comprar_itens(self.usuario_atual)
+            self.fechar_modal(e)  # Fecha o modal de compra
+            #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
+        else:
                 print("Você precisa fazer login primeiro.")
 
     
