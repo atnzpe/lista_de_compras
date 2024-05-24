@@ -15,7 +15,9 @@ import ssl
 
 import flet as ft
 
-#implementar historico
+'''
+código atualizado em 24/05/2024 19:33
+'''#implementar historico''''''
 
 <<<<<<< HEAD
 
