@@ -32,7 +32,6 @@ class Listadecompra:
         """Inicializa um novo objeto Banco com listas vazias de contas e usuários."""
         self.produtos = []  # Corrigido: de self.produto para self.produtos
         self.clientes = []
-        
 
     def criar_usuario(self, nome, cpf, forma_pagamento, endereco, email):
         """ "
@@ -247,15 +246,12 @@ class Listadecompra:
                 print("Conectando ao servidor SMTP...")
                 servidor.login(remetente_email, remetente_senha)
                 print("Login efetuado com sucesso!")
-                servidor.sendmail(remetente_email, usuario.email, mensagem.as_string())
+                servidor.sendmail(remetente_email, usuario.email,
+                                mensagem.as_string())
                 print("Email enviado com sucesso!")
-                
-                
 
             print("Email de confirmação enviado com sucesso!")
             print("Email enviado com sucesso!")
-            os.remove(nome_arquivo_pdf)
-            print(f"Arquivo PDF '{nome_arquivo_pdf}' excluído com sucesso!")
         
         except Exception as e:
             print(f"Erro ao enviar email: {e}")
@@ -315,7 +311,6 @@ class ListaComprasApp:
         self.lista = Listadecompra()
         self.usuario_atual = None
 
-    
     def atualizar_estado_botoes(self):
         """Atualiza o estado dos botões com base no login."""
         logado = bool(self.usuario_atual)  # True se usuario_atual não for None
@@ -695,16 +690,18 @@ class ListaComprasApp:
             #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
         else:
                 print("Você precisa fazer login primeiro.")
+
     
+        
+
+    def fechar_modal(self, e):
+        self.page.dialog.open = False
+        self.page.update()
+
     def sair_do_app(self, e):
         self.page.window_destroy()
 
-    # Modais de Alerta e Fechamento
-
-    def mostrar_mensagem(self, mensagem):
-        """Mostra uma mensagem na tela usando snackbar."""
-        self.page.show_snack_bar(ft.SnackBar(ft.Text(mensagem)))
-        self.page.update()
+    # MOdais de Alerta
 
     def mostrar_alerta(self, mensagem):
         """Exibe um alerta em um Modal (AlertDialog)."""
