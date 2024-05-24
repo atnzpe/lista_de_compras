@@ -14,6 +14,8 @@ import ssl
 
 import flet as ft
 
+#implementar historico
+
 
 class Listadecompra:
     """
