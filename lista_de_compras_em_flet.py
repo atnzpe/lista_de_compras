@@ -161,82 +161,96 @@ class Listadecompra:
 
     def gerar_pdf_compra(self, usuario, nome_arquivo_pdf, valor_total):
         """Gera um PDF com os detalhes da compra."""
-        doc = SimpleDocTemplate(nome_arquivo_pdf, pagesize=letter)
-        styles = getSampleStyleSheet()
+        print(f"Tentando gerar PDF em: {nome_arquivo_pdf}")
+        try:
+            doc = SimpleDocTemplate(nome_arquivo_pdf, pagesize=letter)
+            styles = getSampleStyleSheet()
 
-        story = []
-        story.append(Paragraph("Confirmação de Compra", styles["Heading1"]))
-        story.append(Spacer(1, 12))
+            story = []
+            story.append(Paragraph("Confirmação de Compra", styles["Heading1"]))
+            story.append(Spacer(1, 12))
 
-        story.append(Paragraph("Dados do Comparador", styles["Heading2"]))
-        story.append(Spacer(1, 12))
+            story.append(Paragraph("Dados do Comparador", styles["Heading2"]))
+            story.append(Spacer(1, 12))
 
-        story.append(Paragraph(f"Nome: {usuario.nome}", styles["Normal"]))
-        story.append(
-            Paragraph(f"Endereço de Entrega: {usuario.endereco}", styles["Normal"]))
-        story.append(
-            Paragraph(f"Forma de Pagamento: {usuario.forma_pagamento}", styles["Normal"]))
-        story.append(Spacer(1, 12))
-
-        story.append(Paragraph("Itens Comprados:", styles["Heading2"]))
-        for produto in self.produtos:
+            story.append(Paragraph(f"Nome: {usuario.nome}", styles["Normal"]))
             story.append(
-                Paragraph(
-                    f"- {produto.nome} (Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f})",
-                    styles["Normal"],
+                Paragraph(f"Endereço de Entrega: {usuario.endereco}", styles["Normal"]))
+            story.append(
+                Paragraph(f"Forma de Pagamento: {usuario.forma_pagamento}", styles["Normal"]))
+            story.append(Spacer(1, 12))
+
+            story.append(Paragraph("Itens Comprados:", styles["Heading2"]))
+            for produto in self.produtos:
+                story.append(
+                    Paragraph(
+                        f"- {produto.nome} (Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f})",
+                        styles["Normal"],
+                    )
                 )
+            story.append(Spacer(1, 12))
+
+            story.append(
+                Paragraph(f"Valor Total: R$ {valor_total:.2f}", styles["Heading2"])
             )
-        story.append(Spacer(1, 12))
 
-        story.append(
-            Paragraph(f"Valor Total: R$ {valor_total:.2f}", styles["Heading2"])
-        )
-
-        doc.build(story)
-        print(f"PDF da compra gerado com sucesso: {nome_arquivo_pdf}")
+            doc.build(story)
+            print(f"PDF da compra gerado com sucesso: {nome_arquivo_pdf}")
+            print("PDF gerado com sucesso!")
+        except Exception as e:
+            print(f"Erro ao gerar PDF: {e}")
 
     def enviar_email_confirmacao(self, usuario, nome_arquivo_pdf, valor_total):
         """Envia um email de confirmação com o PDF da compra."""
-        remetente_email = "applistadecompraspython@gmail.com"  # Substitua pelo seu endereço de email
-        remetente_senha = "arzf mwtc wjgc iugb"  # Substitua pela sua senha
-        destinatario_email = usuario.email
+        print("Tentando enviar email...")
+        try:
+            remetente_email = "applistadecompraspython@gmail.com"  # Substitua pelo seu endereço de email
+            remetente_senha = "arzf mwtc wjgc iugb"  # Substitua pela sua senha
+            destinatario_email = usuario.email
 
-        mensagem = MIMEMultipart()
-        mensagem["From"] = remetente_email
-        mensagem["To"] = destinatario_email  # Usando o email do usuário
-        mensagem["Subject"] = "Confirmação de Compra - Sua Lista de Compras"
+            mensagem = MIMEMultipart()
+            mensagem["From"] = remetente_email
+            mensagem["To"] = destinatario_email  # Usando o email do usuário
+            mensagem["Subject"] = "Confirmação de Compra - Sua Lista de Compras"
 
-        corpo_email = f"""
-        Olá {usuario.nome},
+            corpo_email = f"""
+            Olá {usuario.nome},
 
-        Obrigado por comprar conosco!
+            Obrigado por comprar conosco!
 
-        Segue em anexo o PDF com a confirmação da sua compra no valor total de R$ {valor_total:.2f}.
+            Segue em anexo o PDF com a confirmação da sua compra no valor total de R$ {valor_total:.2f}.
 
-        Atenciosamente,
+            Atenciosamente,
 
-        Sua Lista de Compras
-        """
-        mensagem.attach(MIMEText(corpo_email, "plain"))
+            Sua Lista de Compras
+            """
+            mensagem.attach(MIMEText(corpo_email, "plain"))
 
-        # Anexa o PDF à mensagem
-        with open(nome_arquivo_pdf, "rb") as anexo:
-            parte_anexo = MIMEBase("application", "octet-stream")
-            parte_anexo.set_payload(anexo.read())
-            encoders.encode_base64(parte_anexo)
-            parte_anexo.add_header(
-                "Content-Disposition", f"attachment; filename= {nome_arquivo_pdf}"
-            )
-            mensagem.attach(parte_anexo)
+            # Anexa o PDF à mensagem
+            with open(nome_arquivo_pdf, "rb") as anexo:
+                parte_anexo = MIMEBase("application", "octet-stream")
+                parte_anexo.set_payload(anexo.read())
+                encoders.encode_base64(parte_anexo)
+                parte_anexo.add_header(
+                    "Content-Disposition", f"attachment; filename= {nome_arquivo_pdf}"
+                )
+                mensagem.attach(parte_anexo)
 
-        # Cria uma conexão segura com o servidor SMTP
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as servidor:
-            servidor.login(remetente_email, remetente_senha)
-            servidor.sendmail(remetente_email, usuario.email,
-                              mensagem.as_string())
+            # Cria uma conexão segura com o servidor SMTP
+            context = ssl.create_default_context()
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, context=context) as servidor:
+                print("Conectando ao servidor SMTP...")
+                servidor.login(remetente_email, remetente_senha)
+                print("Login efetuado com sucesso!")
+                servidor.sendmail(remetente_email, usuario.email,
+                                mensagem.as_string())
+                print("Email enviado com sucesso!")
 
-        print("Email de confirmação enviado com sucesso!")
+            print("Email de confirmação enviado com sucesso!")
+            print("Email enviado com sucesso!")
+        
+        except Exception as e:
+            print(f"Erro ao enviar email: {e}")
 
 
 class Produto:
@@ -287,35 +301,11 @@ class Cliente:
         self.email = email
 
 
-class ListaComprasApp(ft.UserControl):
-    def __init__(self):
-        super().__init__()
+class ListaComprasApp:
+    def __init__(self, page: ft.Page):
+        self.page = page
         self.lista = Listadecompra()
         self.usuario_atual = None
-
-        # Define a tela inicial com botões
-
-        self.view = ft.Column(
-            [
-                ft.Text("Bem-vindo à Lista de Compras!", size=20),#Titulo
-                ft.ElevatedButton("Login", on_click=self.abrir_modal_login), #Botao [1]
-                ft.ElevatedButton(
-                    "Incluir Item", on_click=self.abrir_modal_adicionar_item, disabled=True),#Botao [2]
-                ft.ElevatedButton(
-                    "Excluir Item", on_click=self.abrir_modal_apagar_item, disabled=True),#Botao [3]
-                ft.ElevatedButton(
-                    "Listar Produtos", on_click=self.abrir_modal_listar_produtos, disabled=True),#Botao [4]
-                ft.ElevatedButton(
-                    "Editar Item",on_click=self.abrir_modal_editar_item,disabled=True),#Botao [5]
-                ft.ElevatedButton(
-                    "Comprar Itens", on_click=self.abrir_modal_comprar_itens, disabled=True),#Botao [6]
-                ft.ElevatedButton("Sair", on_click=self.sair_do_app),#Botao [7]
-            ],
-            alignment=ft.MainAxisAlignment.CENTER,
-        )
-
-    def build(self):
-        return self.view
 
     def atualizar_estado_botoes(self):
         """Atualiza o estado dos botões com base no login."""
@@ -420,6 +410,231 @@ class ListaComprasApp(ft.UserControl):
         else:
             print("Você precisa fazer login primeiro.")
 
+    def abrir_modal_apagar_item(self, e):
+        """Abre o modal para apagar um item."""
+        if not self.lista.produtos:
+            self.mostrar_alerta("Sua lista de compras está vazia!")
+            return
+
+        self.dlg_apagar_item = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Apagar Item"),
+            content=ft.Column(
+                [
+                    ft.Text("Escolha o item a ser apagado:"),
+                    ft.Dropdown(
+                        width=300,
+                        options=[
+                            ft.dropdown.Option(produto.nome)
+                            for produto in self.lista.produtos
+                        ],
+                        ref=ft.Ref[ft.Dropdown](),
+                    ),
+                ]
+            ),
+            actions=[
+                ft.TextButton("Cancelar", on_click=self.fechar_modal),
+                ft.ElevatedButton(
+                    "Apagar", on_click=self.confirmar_apagar_item),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.dialog = self.dlg_apagar_item
+        self.dlg_apagar_item.open = True
+        self.page.update()
+
+    def confirmar_apagar_item(self, e):
+        """Confirma a exclusão do item."""
+        dlg = self.page.dialog
+        # Valor do dropdown
+        nome_item_selecionado = dlg.content.controls[1].value
+
+        try:
+            # Encontra o índice do item pelo nome
+            indice_para_apagar = next(
+                (
+                    i
+                    for i, produto in enumerate(self.lista.produtos)
+                    if produto.nome == nome_item_selecionado
+                ),
+                None,
+            )
+
+            if indice_para_apagar is not None:
+                self.lista.produtos.pop(indice_para_apagar)
+                self.mostrar_alerta("Item apagado com sucesso!")
+            else:
+                self.mostrar_alerta("Item não encontrado!")
+
+        except Exception as e:
+            print(f"Erro ao apagar item: {e}")
+            self.mostrar_alerta("Erro ao apagar item!")
+
+        self.atualizar_lista_produtos()
+        self.dlg_apagar_item.update()
+        self.fechar_modal(e)
+
+    def abrir_modal_listar_produtos(self, e):
+        """Abre o modal para listar os produtos."""
+        if not self.lista.produtos:
+            self.mostrar_alerta("Sua lista de compras está vazia!")
+            return
+
+        itens_lista = [
+            ft.ListTile(
+                title=ft.Text(produto.nome),
+                subtitle=ft.Text(
+                    f"- Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f}"
+                ),
+            )
+            for produto in self.lista.produtos
+        ]
+
+        dlg_listar_produtos = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Lista de Produtos"),
+            content=ft.Column(itens_lista),
+            actions=[
+                ft.TextButton("Fechar", on_click=self.fechar_modal),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.dialog = dlg_listar_produtos
+        dlg_listar_produtos.open = True
+        self.page.update()
+
+    def atualizar_lista_produtos(self):
+        """Atualiza a visualização da lista de produtos dentro do modal."""
+
+        dlg_listar_produtos = None
+        if hasattr(self, "dlg_listar_produtos") and self.dlg_listar_produtos.open:
+            dlg_listar_produtos = self.dlg_listar_produtos
+        elif (
+            hasattr(self, "dlg_comprar_itens")
+            and self.dlg_comprar_itens.open
+        ):
+            dlg_listar_produtos = self.dlg_comprar_itens
+
+        # Verificação movida para DENTRO do bloco if, onde dlg_listar_produtos pode ter um valor
+        if dlg_listar_produtos:
+            # 2. Limpe os itens existentes na lista dentro do AlertDialog
+            dlg_listar_produtos.content.controls[1].controls.clear()
+
+            # 3. Adicione os novos itens à lista - CORREÇÃO DE INDENTAÇÃO
+            for produto in self.lista.produtos:
+                dlg_listar_produtos.content.controls[1].controls.append(
+                    ft.ListTile(
+                        title=ft.Text(produto.nome),
+                        subtitle=ft.Text(
+                            f"- Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f}"
+                        ),
+                    )
+                )
+
+            # 4. Atualize o AlertDialog
+            dlg_listar_produtos.update()
+
+    def abrir_modal_editar_item(self, e):
+        """Abre o modal para editar um item da lista."""
+        if not self.lista.produtos:
+            self.mostrar_alerta("Sua lista de compras está vazia!")
+            return
+
+        self.dlg_editar_item = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("Editar Item"),
+            content=ft.Column(
+                [
+                    ft.Text("Escolha o item a ser editado:"),
+                    ft.Dropdown(
+                        width=300,
+                        options=[
+                            ft.dropdown.Option(produto.nome) for produto in self.lista.produtos
+                        ],
+                        ref=ft.Ref[ft.Dropdown](),
+                    ),
+                    ft.TextField(label="Novo Nome",
+                                 ref=ft.Ref[ft.TextField]()),
+                    ft.TextField(label="Nova Quantidade",
+                                 ref=ft.Ref[ft.TextField]()),
+                    ft.TextField(label="Novo Valor Unitário",
+                                 ref=ft.Ref[ft.TextField]()),
+                ]
+            ),
+            actions=[
+                ft.TextButton("Cancelar", on_click=self.fechar_modal),
+                ft.ElevatedButton("Salvar", on_click=self.salvar_edicao_item),
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
+        )
+        self.page.dialog = self.dlg_editar_item
+        self.dlg_editar_item.open = True
+        self.page.update()
+
+    def salvar_edicao_item(self, e):
+        """Salva as alterações feitas no item."""
+        dlg = self.page.dialog
+        nome_item_selecionado = dlg.content.controls[1].value
+        novo_nome = dlg.content.controls[2].value
+        nova_quantidade = dlg.content.controls[3].value
+        novo_valor_unitario = dlg.content.controls[4].value
+
+        try:
+            nova_quantidade = float(
+                nova_quantidade) if nova_quantidade else None
+            novo_valor_unitario = float(
+                novo_valor_unitario) if novo_valor_unitario else None
+
+            for i, produto in enumerate(self.lista.produtos):
+                if produto.nome == nome_item_selecionado:
+                    if novo_nome:
+                        self.lista.produtos[i].nome = novo_nome
+                    if nova_quantidade is not None:
+                        self.lista.produtos[i].quantidade = nova_quantidade
+                    if novo_valor_unitario is not None:
+                        self.lista.produtos[i].valor_unitario = novo_valor_unitario
+
+                    self.lista.produtos[i].valor_total = self.lista.produtos[i].quantidade * \
+                        self.lista.produtos[i].valor_unitario
+                    break
+
+            self.fechar_modal(e)
+            self.mostrar_alerta("Item editado com sucesso!")
+            self.atualizar_lista_produtos()
+        except ValueError:
+            self.mostrar_alerta(
+                "Digite valores numéricos válidos para Quantidade e Valor Unitário.")
+
+    def atualizar_lista_produtos(self):
+        """Atualiza a visualização da lista de produtos dentro do modal."""
+
+        dlg_listar_produtos = None
+        if hasattr(self, "dlg_listar_produtos") and self.dlg_listar_produtos.open:
+            dlg_listar_produtos = self.dlg_listar_produtos
+        elif (
+            hasattr(self, "dlg_comprar_itens")
+            and self.dlg_comprar_itens.open
+        ):
+            dlg_listar_produtos = self.dlg_comprar_itens
+
+        # Verificação movida para DENTRO do bloco if, onde dlg_listar_produtos pode ter um valor
+        if dlg_listar_produtos:
+            # 2. Limpe os itens existentes na lista dentro do AlertDialog
+            dlg_listar_produtos.content.controls[1].controls.clear()
+
+            # 3. Adicione os novos itens à lista
+            for produto in self.lista.produtos:
+                dlg_listar_produtos.content.controls[1].controls.append(
+                    ft.ListTile(
+                        title=ft.Text(produto.nome),
+                        subtitle=ft.Text(
+                            f"- Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f}"
+                        ),
+                    )
+                )
+
+            # 4. Atualize o AlertDialog
+            dlg_listar_produtos.update()
 
     def abrir_modal_comprar_itens(self, e):
         if not self.lista.produtos:
@@ -465,11 +680,15 @@ class ListaComprasApp(ft.UserControl):
         self.page.update()
 
     def confirmar_compra(self, e):
-        if self.usuario_atual:
-            self.lista.comprar_itens(self.usuario_atual)
-            self.fechar_modal(e)  # Fecha o modal de compra
-        else:
-            print("Você precisa fazer login primeiro.")
+            if self.usuario_atual:
+                self.lista.comprar_itens(self.usuario_atual)
+                self.fechar_modal(e)  # Fecha o modal de compra
+                #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
+            else:
+                print("Você precisa fazer login primeiro.")
+
+    
+        
 
     def fechar_modal(self, e):
         self.page.dialog.open = False
@@ -478,189 +697,68 @@ class ListaComprasApp(ft.UserControl):
     def sair_do_app(self, e):
         self.page.window_destroy()
 
-    def abrir_modal_apagar_item(self, e):
-        """Abre o modal para apagar um item."""
-        if not self.lista.produtos:
-            self.mostrar_alerta("Sua lista de compras está vazia!")
-            return
+    # MOdais de Alerta
 
-        self.dlg_apagar_item = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Apagar Item"),
-            content=ft.Column(
-                [
-                    ft.Text("Escolha uma opção:"),
-                    ft.RadioGroup(
-                        content=ft.Row(
-                            [
-                                ft.Radio(value="indice", label="Por Índice"),
-                                ft.Radio(value="nome", label="Por Nome"),
-                            ]
-                        ),
-                        ref=ft.Ref[ft.RadioGroup](),
-                    ),
-                    ft.TextField(label="Índice ou Nome",
-                                 ref=ft.Ref[ft.TextField]()),
-                ]
-            ),
-            actions=[
-                ft.TextButton("Cancelar", on_click=self.fechar_modal),
-                ft.ElevatedButton(
-                    "Apagar", on_click=self.confirmar_apagar_item),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-        self.page.dialog = self.dlg_apagar_item
-        self.dlg_apagar_item.open = True
-        self.page.update()
-
-    def confirmar_apagar_item(self, e):
-        """Confirma a exclusão do item."""
-        dlg = self.page.dialog
-        opcao = dlg.content.controls[1].value
-        valor = dlg.content.controls[2].value
-
-        try:
-            if opcao == "indice":
-                indice = int(valor)
-                if 0 <= indice < len(self.lista.produtos):
-                    self.lista.produtos.pop(indice)
-                    self.mostrar_alerta("Item apagado com sucesso!")
-                else:
-                    self.mostrar_alerta("Índice inválido!")
-            elif opcao == "nome":
-                for i, produto in enumerate(self.lista.produtos):
-                    if produto.nome == valor:
-                        del self.lista.produtos[i]
-                        self.mostrar_alerta("Item apagado com sucesso!")
-                        break
-                else:
-                    self.mostrar_alerta("Item não encontrado!")
-            else:
-                self.mostrar_alerta("Opção inválida!")
-        except ValueError:
-            self.mostrar_alerta("Índice inválido!")
-
-        self.fechar_modal(e)
-
-    def abrir_modal_listar_produtos(self, e):
-        """Abre o modal para listar os produtos."""
-        if not self.lista.produtos:
-            self.mostrar_alerta("Sua lista de compras está vazia!")
-            return
-
-        itens_lista = [
-            ft.ListTile(
-                title=ft.Text(produto.nome),
-                subtitle=ft.Text(
-                    f"- Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f}"
-                ),
-            )
-            for produto in self.lista.produtos
-        ]
-
-        dlg_listar_produtos = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Lista de Produtos"),
-            content=ft.Column(itens_lista),
-            actions=[
-                ft.TextButton("Fechar", on_click=self.fechar_modal),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-        self.page.dialog = dlg_listar_produtos
-        dlg_listar_produtos.open = True
-        self.page.update()
-
-    def abrir_modal_editar_item(self, e):
-    
-        """Abre o modal para editar um item da lista."""
-        if not self.lista.produtos:
-            self.mostrar_alerta("Sua lista de compras está vazia!")
-            return
-
-        self.dlg_editar_item = ft.AlertDialog(
-            modal=True,
-            title=ft.Text("Editar Item"),
-            content=ft.Column(
-                [
-                    ft.Text("Escolha o item a ser editado:"),
-                    ft.Dropdown(
-                        width=300,
-                        options=[
-                            ft.dropdown.Option(produto.nome) for produto in self.lista.produtos
-                        ],
-                        ref=ft.Ref[ft.Dropdown](),
-                    ),
-                    ft.TextField(label="Novo Nome", ref=ft.Ref[ft.TextField]()),
-                    ft.TextField(label="Nova Quantidade", ref=ft.Ref[ft.TextField]()),
-                    ft.TextField(label="Novo Valor Unitário", ref=ft.Ref[ft.TextField]()),
-                ]
-            ),
-            actions=[
-                ft.TextButton("Cancelar", on_click=self.fechar_modal),
-                ft.ElevatedButton("Salvar", on_click=self.salvar_edicao_item),
-            ],
-            actions_alignment=ft.MainAxisAlignment.END,
-        )
-        self.page.dialog = self.dlg_editar_item
-        self.dlg_editar_item.open = True
-        self.page.update()
-    '''def mostrar_alerta(self, mensagem):
-        """Exibe um alerta (SnackBar) na tela."""
-        self.page.snack_bar = ft.SnackBar(ft.Text(mensagem))
-        self.page.snack_bar.open = True
-        self.page.update()
-    '''
-    def salvar_edicao_item(self, e):
-        """Salva as alterações feitas no item."""
-        dlg = self.page.dialog
-        nome_item_selecionado = dlg.content.controls[1].value
-        novo_nome = dlg.content.controls[2].value
-        nova_quantidade = dlg.content.controls[3].value
-        novo_valor_unitario = dlg.content.controls[4].value
-
-        try:
-            nova_quantidade = float(nova_quantidade) if nova_quantidade else None
-            novo_valor_unitario = float(novo_valor_unitario) if novo_valor_unitario else None
-
-            for i, produto in enumerate(self.lista.produtos):
-                if produto.nome == nome_item_selecionado:
-                    if novo_nome:
-                        self.lista.produtos[i].nome = novo_nome
-                    if nova_quantidade:
-                        self.lista.produtos[i].quantidade = nova_quantidade
-                    if novo_valor_unitario:
-                        self.lista.produtos[i].valor = nova_quantidade * novo_valor_unitario  # Recalcula o valor total
-                    break
-
-            self.fechar_modal(e)
-            self.mostrar_alerta("Item editado com sucesso!")
-        except ValueError:
-            self.mostrar_alerta("Digite valores numéricos válidos para Quantidade e Valor Unitário.")
-    
     def mostrar_alerta(self, mensagem):
-        """Exibe um alerta (SnackBar) na parte CENTRAL da tela."""
-        self.page.snack_bar = ft.SnackBar(
-            ft.Container(
-                ft.Text(mensagem),
-                padding=ft.padding.all(10),
-                bgcolor=ft.colors.BLUE_GREY_100,
-                border_radius=ft.border_radius.all(5),
-            ),
-            # Define a posição horizontal como center
-            action="OK",
+        """Exibe um alerta em um Modal (AlertDialog)."""
+        dlg = ft.AlertDialog(
+            modal=True,
+            title=ft.Text("ATENÇÃO"),
+            content=ft.Text(mensagem),
+
+            actions=[
+                # usa a mesma função fechar_modal
+                ft.TextButton("OK", on_click=self.fechar_modal)
+            ],
+            actions_alignment=ft.MainAxisAlignment.END,
         )
-        self.page.snack_bar.open = True
+        self.page.dialog = dlg  # Atribui o diálogo diretamente
+        dlg.open = True
         self.page.update()
+
+    def fechar_modal(self, e):
+        """Fecha qualquer modal aberto."""
+        self.page.dialog.open = False
+        self.page.update()
+
+    # Encerrar Modais de Alerta
+
+    def build(self):
+        self.view = ft.Column(
+            [
+                ft.Text("Bem-vindo à Lista de Compras!",
+                        size=20),  # Titulo
+                ft.ElevatedButton(
+                    "Login", on_click=self.abrir_modal_login),  # Botao [1]
+                ft.ElevatedButton(
+                    "Incluir Item", on_click=self.abrir_modal_adicionar_item, disabled=True),  # Botao [2]
+                ft.ElevatedButton(
+                    "Excluir Item", on_click=self.abrir_modal_apagar_item, disabled=True),  # Botao [3]
+                ft.ElevatedButton(
+                    "Listar Produtos", on_click=self.abrir_modal_listar_produtos, disabled=True),  # Botao [4]
+                ft.ElevatedButton(
+                    "Editar Item", on_click=self.abrir_modal_editar_item, disabled=True),  # Botao [5]
+                ft.ElevatedButton(
+                    "Comprar Itens", on_click=self.abrir_modal_comprar_itens, disabled=True),  # Botao [6]
+                ft.ElevatedButton(
+                    "Sair", on_click=self.sair_do_app),  # Botao [7]
+
+            ],
+            alignment=ft.MainAxisAlignment.CENTER,
+        )
+
+        self.page.add(self.view)
+        # self.page.add(self.lista_produtos_view)
+
+        return self.view
 
 
 def main(page: ft.Page):
     page.title = "Lista de Compras"
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-    app = ListaComprasApp()
-    page.add(app)
-    app.atualizar_estado_botoes()
+    app = ListaComprasApp(page)
+    page.add(app.build())
+    # app.atualizar_estado_botoes()
 
 
 ft.app(target=main)
