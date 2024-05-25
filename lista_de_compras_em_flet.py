@@ -12,7 +12,7 @@ import smtplib
 import ssl
 
 import flet as ft
-
+data = datetime.datetime.now()
 '''
 código atualizado em 24/05/2024 19:33
 '''#implementar historico''''''
@@ -32,6 +32,7 @@ class Listadecompra:
         """Inicializa um novo objeto Banco com listas vazias de contas e usuários."""
         self.produtos = []  # Corrigido: de self.produto para self.produtos
         self.clientes = []
+        
 
     def criar_usuario(self, nome, cpf, forma_pagamento, endereco, email):
         """ "
@@ -89,6 +90,7 @@ class Listadecompra:
             print("A lista de compras está vazia.")
         else:
             print("Produtos na lista:")
+            
             for produto in self.produtos:
                 print(
                     f"- {produto.nome} (Quantidade: {produto.quantidade}, Valor unitário do item: {produto.valor_unitario:.2f} Valor Total do Item: {produto.valor_total:.2f})"
@@ -154,7 +156,8 @@ class Listadecompra:
         valor_total = sum(produto.valor_total for produto in self.produtos)
 
         # Gera o PDF da compra
-        nome_arquivo_pdf = f"compra_{usuario.nome}_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+        
+        nome_arquivo_pdf = f"compra_{usuario.nome}_{data.strftime('%Y%m%d%H%M%S')}.pdf"
         self.gerar_pdf_compra(usuario, nome_arquivo_pdf, valor_total)
 
         # Envia o email com o PDF
@@ -171,9 +174,11 @@ class Listadecompra:
             styles = getSampleStyleSheet()
 
             story = []
-            story.append(Paragraph("Confirmação de Compra", styles["Heading1"]))
+            story.append(Paragraph(f"Confirmação de Compra do Sr(a) {usuario.nome}", styles["Heading1"]))
             story.append(Spacer(1, 12))
 
+            story.append(Paragraph(f"Data da Compra: {data.strftime('%d/%m/%Y, %H:%M:%S')}", styles["Normal"]))
+            
             story.append(Paragraph("Dados do Comparador", styles["Heading2"]))
             story.append(Spacer(1, 12))
 
@@ -246,12 +251,12 @@ class Listadecompra:
                 print("Conectando ao servidor SMTP...")
                 servidor.login(remetente_email, remetente_senha)
                 print("Login efetuado com sucesso!")
-                servidor.sendmail(remetente_email, usuario.email,
-                                mensagem.as_string())
+                servidor.sendmail(remetente_email, usuario.email, mensagem.as_string())
                 print("Email enviado com sucesso!")
-
-            print("Email de confirmação enviado com sucesso!")
+            
             print("Email enviado com sucesso!")
+            os.remove(nome_arquivo_pdf)
+            print(f"Arquivo PDF '{nome_arquivo_pdf}' excluído com sucesso!")
         
         except Exception as e:
             print(f"Erro ao enviar email: {e}")
@@ -311,6 +316,7 @@ class ListaComprasApp:
         self.lista = Listadecompra()
         self.usuario_atual = None
 
+    
     def atualizar_estado_botoes(self):
         """Atualiza o estado dos botões com base no login."""
         logado = bool(self.usuario_atual)  # True se usuario_atual não for None
@@ -680,28 +686,26 @@ class ListaComprasApp:
         )
         self.page.dialog = self.dlg_comprar_itens
         self.dlg_comprar_itens.open = True
-        #self.mostrar_alerta("Email de confirmação enviado com sucesso!")
         self.page.update()
+        
 
     def confirmar_compra(self, e):
         if self.usuario_atual:
             self.lista.comprar_itens(self.usuario_atual)
             self.fechar_modal(e)  # Fecha o modal de compra
-            #self.mostrar_alerta("Email de Confirmação enviado com sucesso!")
+            self.mostrar_alerta(f"Confirmação do Pedido do Sr(a) {self.usuario_atual.nome} enviado com sucesso!")
         else:
-                print("Você precisa fazer login primeiro.")
-
-    
+            print("Você precisa fazer login primeiro.")
         
-
-    def fechar_modal(self, e):
-        self.page.dialog.open = False
-        self.page.update()
-
     def sair_do_app(self, e):
         self.page.window_destroy()
 
-    # MOdais de Alerta
+    # Modais de Alerta e Fechamento
+
+    def mostrar_mensagem(self, mensagem):
+        """Mostra uma mensagem na tela usando snackbar."""
+        self.page.show_snack_bar(ft.SnackBar(ft.Text(mensagem)))
+        self.page.update()
 
     def mostrar_alerta(self, mensagem):
         """Exibe um alerta em um Modal (AlertDialog)."""
