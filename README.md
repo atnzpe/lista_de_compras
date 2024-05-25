@@ -54,3 +54,9 @@ Adicionada a capacidade de editar itens existentes na lista de compras.
 - Habilitado o botão "Editar Item" após o login do usuário.
 
 Essa funcionalidade aumenta a flexibilidade do aplicativo, permitindo que os usuários corrijam ou modifiquem os itens da sua lista de compras de forma conveniente.git
+
+feat(envio-email): Remove PDF após envio de email
+
+Implementa a funcionalidade de remover o arquivo PDF da compra após o envio bem-sucedido do email de confirmação. 
+
+Isso evita o acúmulo de arquivos desnecessários no sistema.
