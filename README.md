@@ -60,3 +60,7 @@ feat(envio-email): Remove PDF após envio de email
 Implementa a funcionalidade de remover o arquivo PDF da compra após o envio bem-sucedido do email de confirmação. 
 
 Isso evita o acúmulo de arquivos desnecessários no sistema.
+
+28/05/2023
+
+Checagem do Dev
